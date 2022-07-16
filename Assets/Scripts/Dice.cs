@@ -13,6 +13,14 @@ public class Dice : MonoBehaviour
 	int currentTop;
 	int currentBot;
 
+	public int top() {
+		return currentTop;
+	}
+
+	public int bot() {
+		return currentBot;
+	}
+
 	/*
 	// regular
 	  1
@@ -71,6 +79,7 @@ public class Dice : MonoBehaviour
 		diceValues[3] = d5;
 		diceValues[5] = d2;
 		diceValues[2] = d0;
+		updateTopAndBot();
 
 		StartCoroutine(animate(
 			new Vector3(90f, 0f, 0f),
@@ -88,6 +97,7 @@ public class Dice : MonoBehaviour
 		diceValues[3] = d0;
 		diceValues[5] = d3;
 		diceValues[2] = d5;
+		updateTopAndBot();
 
 		StartCoroutine(animate(
 			new Vector3(-90f, 0f, 0f),
@@ -117,6 +127,7 @@ public class Dice : MonoBehaviour
 		diceValues[1] = d0;
 		diceValues[4] = d5;
 		diceValues[5] = d1;
+		updateTopAndBot();
 
 		StartCoroutine(animate(
 			new Vector3(0f, 0f, 90f),
@@ -134,6 +145,7 @@ public class Dice : MonoBehaviour
 		diceValues[1] = d5;
 		diceValues[4] = d0;
 		diceValues[5] = d4;
+		updateTopAndBot();
 
 		StartCoroutine(animate(
 			new Vector3(0f, 0f, -90f),
@@ -150,13 +162,12 @@ public class Dice : MonoBehaviour
 	void updateTopAndBot() {
         currentTop = diceValues[0];
         currentBot = diceValues[5];
+		//print("Top is now: " + currentTop);
+		//print("Bot is now: " + currentBot);
 	}
 
     // Update is called once per frame
     void Update()
     {
-		updateTopAndBot();
-		//print("Top is now: " + currentTop);
-		//print("Bot is now: " + currentBot);
     }
 }

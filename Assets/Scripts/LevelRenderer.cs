@@ -1,40 +1,126 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
+
+public enum Direction {
+	None,
+	Up,
+	Down,
+	Left,
+	Right,
+};
+
+public class Switch {
+	public Switch(Vector2Int p, int k) {
+		pos = p;
+		key = k;
+		triggered = false;
+	}
+
+	public GameObject obj;
+	public Vector2Int pos;
+	public int key;
+	public bool triggered;
+};
 
 public class LevelRenderer : MonoBehaviour
 {
-
-	/*
-	public class Cell {
-		public bool collides;
-	};
-	*/
 
 	int[,] grid = new int[,]{
 		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1,},
 		{1, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
 		{1, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-		{1, 0, 0, 0, 0, 1, 1, 0, 0, 1,},
-		{1, 0, 0, 0, 0, 1, 1, 0, 0, 1,},
 		{1, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
+		{1, 0, 0, 0, 0, 0, 1, 1, 0, 1,},
 		{1, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
 		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1,},
 	};
 
-	enum Direction {
-		None,
-		Up,
-		Down,
-		Left,
-		Right,
+	Switch[] switches = new Switch[]{
+		new Switch(new Vector2Int(5, 2), 2),
 	};
 
     public Vector3 playerPos = Vector3.zero;
+    public Vector3 dicePos = Vector3.zero;
 
-    public Dice player; 
-    Vector3 playerOffset = new Vector3(0.5f, 0.5f, 0.5f);
+	public GameObject key2Switch;
+	public AudioSource keyUnlockSfx;
+	public AudioSource keyUnlockFailSfx;
+
+    public Dice dice; 
+    public Player player; 
+	public float switchFadeOutTime = 1f;
+    Vector3 playerOffset = new Vector3(0.5f, 1f, 0.29f);
+    Vector3 diceOffset = new Vector3(0.5f, 0.5f, 0.5f);
     Texture2D tex;
+
+	void initSwitches() {
+		for(int i = 0; i < switches.Length; i++) {
+			var p = switches[i].pos;
+			var pos = new Vector3((float)p.x + 0.5f, 0.05f, (float)p.y + 0.5f);
+			switch(switches[i].key) {
+				case 2:
+					switches[i].obj = Instantiate(key2Switch, pos, key2Switch.transform.rotation);
+					switches[i].obj.transform.localScale *= 3f;
+					break;
+				default:
+					print(switches[i].key);
+					Assert.IsTrue(false);
+					break;
+			}
+		}
+
+	}
+
+	void checkIfSwitchesWereTriggered(Vector2Int here) {
+		for(int i = 0; i < switches.Length; i++) {
+			var there = switches[i].pos;
+			//print(there + " compare " + here);
+			if(there == here) {
+				tryTriggerSwitch(i);
+				break;
+			} else {
+				//print("No trigger");
+			}
+		}
+	}
+
+	void tryTriggerSwitch(int index) {
+		if(switches[index].key != dice.bot()) {
+			keyUnlockFailSfx.Play();
+			//print("Unlock failed!");
+			return;
+		}
+
+		if(switches[index].triggered) {
+			return;
+		}
+
+		switches[index].triggered = false;
+		keyUnlockSfx.Play();
+		StartCoroutine(fadeOutSwitch(index));
+		//print("Unlocked! top was " + dice.top() + " bot was " + dice.bot());
+
+	}
+
+	IEnumerator fadeOutSwitch(int index) {
+		var obj = switches[index].obj;
+		var sprite = obj.GetComponent<SpriteRenderer>();
+
+		var t = switchFadeOutTime;
+		while(t > 0) {
+			var delta = Time.deltaTime;
+			t -= delta;
+			var s = t / switchFadeOutTime;
+			var color = sprite.color;
+			color.a = s;
+			sprite.color = color;
+			yield return null;
+		}
+		Destroy(obj);
+	}
 
     // Start is called before the first frame update
     void Start()
@@ -51,9 +137,11 @@ public class LevelRenderer : MonoBehaviour
         renderer.material.mainTexture = tex;
         
         player.transform.position = playerPos + playerOffset;
+		dice.transform.position = dicePos + diceOffset;
         
         //Only needs to be called once in Start() or Awake(), if grid doesn't change.
         RenderGridToTexture(); 
+		initSwitches();
     }
 
     void RenderGridToTexture()
@@ -72,23 +160,23 @@ public class LevelRenderer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-		if(player.isMoving()) {
+		if(player.isMoving() || dice.isMoving()) {
 			return;
 		}
 
 		Vector3 motion = Vector3.zero;
 		Direction dir = Direction.None;
 
-		if (Input.GetKeyDown(KeyCode.W)) {
+		if (Input.GetKey(KeyCode.W)) {
 			motion += Vector3.forward;
 			dir = Direction.Up;
-		} else if (Input.GetKeyDown(KeyCode.S)) {
+		} else if (Input.GetKey(KeyCode.S)) {
 			motion += Vector3.back;
 			dir = Direction.Down;
-		} else if (Input.GetKeyDown(KeyCode.A)) {
+		} else if (Input.GetKey(KeyCode.A)) {
 			motion += Vector3.left;
 			dir = Direction.Left;
-		} else if (Input.GetKeyDown(KeyCode.D)) {
+		} else if (Input.GetKey(KeyCode.D)) {
 			motion += Vector3.right;
 			dir = Direction.Right;
 		}
@@ -102,10 +190,41 @@ public class LevelRenderer : MonoBehaviour
 		proposedPos.z = proposedPos.z < 0 ? 0 : proposedPos.z;
 		proposedPos.z = proposedPos.z > gridHeight - 1 ? gridHeight - 1 : proposedPos.z;
 
+		var rpp = proposedPos - playerOffset;
+		var rdp = dice.transform.position - diceOffset;
+
+		if(Mathf.Round(rpp.x) == Mathf.Round(rdp.x) && Mathf.Round(rpp.z) == Mathf.Round(rdp.z)) {
+			var proposedDicePos = dice.transform.position + motion;
+			var proposedDiceCoords = new Vector2Int((int)(proposedDicePos.x), (int)proposedDicePos.z);
+			if(grid[proposedDiceCoords.y, proposedDiceCoords.x] == 1) {
+				player.stop();
+				return;
+			} else {
+				switch(dir) {
+					case Direction.Up:
+						dice.goUp();
+						break;
+					case Direction.Down:
+						dice.goDown();
+						break;
+					case Direction.Left:
+						dice.goLeft();
+						break;
+					case Direction.Right:
+						dice.goRight();
+						break;
+					case Direction.None:
+						break;
+				}
+
+				checkIfSwitchesWereTriggered(proposedDiceCoords);
+			}
+
+		}
+
 		if (grid[(int)proposedPos.z, (int)proposedPos.x] == 1)
 		{
-			proposedPos = playerPos; //reset the proposed to the current position (stay there).
-			
+			player.stop();
 			Debug.Log("Invalid attempted move from " + playerPos +
 											  " to " + proposedPos);
 		} else {
@@ -122,6 +241,9 @@ public class LevelRenderer : MonoBehaviour
 					break;
 				case Direction.Right:
 					player.goRight();
+					break;
+				case Direction.None:
+					player.stop();
 					break;
 			}
 		}

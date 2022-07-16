@@ -20,7 +20,9 @@ public class Tilemanager : MonoBehaviour
     private List<Tiledata> tileDatas;
 
     private Dictionary<TileBase, Tiledata> dataFromTiles;
-    
+    private Dictionary<int, List<Vector2Int>> affectedTiles = new Dictionary<int, List<Vector2Int>>();
+
+
     private void Awake(){
         dataFromTiles = new Dictionary<TileBase, Tiledata>();
 
@@ -45,6 +47,7 @@ public class Tilemanager : MonoBehaviour
 	public float switchFadeOutTime = 1f;
 	public GameObject exit;
 	public TileBase regularTile;
+    public TileBase wallTile;
     
     private bool grab = false;
 
@@ -85,7 +88,6 @@ public class Tilemanager : MonoBehaviour
     void Start()
     {
         bounds = tileMap.cellBounds;
-        allTiles = tileMap.GetTilesBlock(bounds);
 		createMesh();
 
         player.transform.position = playerPos + playerOffset;
@@ -235,15 +237,25 @@ public class Tilemanager : MonoBehaviour
 
 	void checkIfSwitchesWereTriggered(Vector2Int here) {
 		var tile = get(here);
-		if(tile.name == "switch-2") {
-			tryTriggerSwitch(here, 2);
+		if(dataFromTiles[tile].stageSwitch) {
+			tryTriggerSwitch(here, dataFromTiles[tile].functionNumber, tile);
 			return;
 		}
 	}
 
 	
-	void tryTriggerSwitch(Vector2Int here, int key) {
-		if(key != dice.bot()) {
+	void tryTriggerSwitch(Vector2Int here, int key, TileBase tile) {
+		if(key == 2){
+            keyUnlock(here, key);
+        }
+        else if (key == 7){
+            revealHiddenWalls(here, tile);
+        }
+	}
+
+
+    void keyUnlock(Vector2Int here, int key){
+        if(key != dice.bot()) {
 			keyUnlockFailSfx.Play();
 			return;
 		}
@@ -261,8 +273,17 @@ public class Tilemanager : MonoBehaviour
 		if(nKeys == 0) {
 			exit.SetActive(true);
 		}
-	}
+    }
 
+    void revealHiddenWalls(Vector2Int here, TileBase tile){
+        set(here.x, here.y, regularTile);
+        List<Vector2Int> tiles = affectedTiles[dataFromTiles[tile].id];
+        for(int i = 0; i < tiles.Count; i++){
+            set(tiles[i].x, tiles[i].y, wallTile);
+        }
+        print("arrived");
+        createMesh();
+    }
 
 	void checkIfExitIsReached(Vector2Int coords) {
 		if(coords != exitPos) {
@@ -277,6 +298,7 @@ public class Tilemanager : MonoBehaviour
 	}
 
 	void createMesh() {
+        allTiles = tileMap.GetTilesBlock(bounds);
         for (int x = bounds.size.x-1; x >= 0; x--) {
             for (int y = 0; y < bounds.size.y; y++) {
                 var tile = get(x, y);
@@ -296,8 +318,20 @@ public class Tilemanager : MonoBehaviour
                 else if(tile.name == "diceStart"){
                     dicePos = new Vector3(x, 0, y);
                 }
+                else if(dataFromTiles[tile].interactable){
+                    if(affectedTiles.ContainsKey(dataFromTiles[tile].id)){
+                        affectedTiles[dataFromTiles[tile].id].Add(new Vector2Int(x, y));
+                    } else {
+                        List<Vector2Int> tempList = new List<Vector2Int>();
+                        tempList.Add(new Vector2Int(x, y));
+                        affectedTiles.Add(dataFromTiles[tile].id, tempList);
+                        print(dataFromTiles[tile].id);
+                    }
+                }
             }
         }
+        print(affectedTiles[34].ToString());
 	}
+    
 
 }

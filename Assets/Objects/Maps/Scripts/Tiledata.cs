@@ -10,7 +10,11 @@ public class Tiledata : ScriptableObject
     
     public TileBase[] tiles;
 
-    public bool walkable, rollable, wall;
+    public bool walkable, rollable, wall, stageSwitch, interactable;
+
+    public int functionNumber, id;
+
+    public (int, int) coordinates = (0, 0);
 
     public GameObject wallObject = null;
 }

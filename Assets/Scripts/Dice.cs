@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class Dice : MonoBehaviour
 {
-	public float howMuchItMoves;
-
 	public int[] diceValues = new int[6];
+
+	public float rotationTime = 1f;
+
+	bool isAnimating = false;
 
 	int currentTop;
 	int currentBot;
@@ -25,7 +27,41 @@ public class Dice : MonoBehaviour
 	  2
 	*/
 
-	void goUp() {
+	public bool isMoving() {
+		return isAnimating;
+	}
+
+	IEnumerator animate(Vector3 desiredRotation, Vector3 desiredTranslation) {
+		var startRotation = transform.rotation;
+		transform.Rotate(desiredRotation, Space.World);
+		var endRotation = transform.rotation;
+		transform.Rotate(-desiredRotation, Space.World);
+
+		var startPosition = transform.position;
+		var endPosition = transform.position + desiredTranslation;
+
+		float t = 0f;
+
+		isAnimating = true;
+		while(t < rotationTime) {
+			var delta = Time.deltaTime;
+			t += delta;
+			var s = t / rotationTime;
+			var rotationThisFrame = Quaternion.Slerp(startRotation, endRotation, s);
+			var positionThisFrame = Vector3.Slerp(startPosition, endPosition, s);
+
+			var yAxisOffset = Mathf.Sin(s * Mathf.PI) * 0.2f;
+
+			transform.rotation = rotationThisFrame;
+			transform.position = positionThisFrame;
+			transform.position += Vector3.up * yAxisOffset;
+			yield return null;
+		}
+		transform.position = endPosition;
+		isAnimating = false;
+	}
+
+	public void goUp() {
 		var d0 = diceValues[0];
 		var d3 = diceValues[3];
 		var d5 = diceValues[5];
@@ -36,10 +72,13 @@ public class Dice : MonoBehaviour
 		diceValues[5] = d2;
 		diceValues[2] = d0;
 
-		transform.Rotate(90f, 0f, 0f, Space.World);
+		StartCoroutine(animate(
+			new Vector3(90f, 0f, 0f),
+			Vector3.forward
+		));
 	}
 
-	void goDown() {
+	public void goDown() {
 		var d0 = diceValues[0];
 		var d3 = diceValues[3];
 		var d5 = diceValues[5];
@@ -50,7 +89,10 @@ public class Dice : MonoBehaviour
 		diceValues[5] = d3;
 		diceValues[2] = d5;
 
-		transform.Rotate(-90f, 0f, 0f, Space.World);
+		StartCoroutine(animate(
+			new Vector3(-90f, 0f, 0f),
+			Vector3.back
+		));
 	}
 
 	/*
@@ -65,7 +107,7 @@ public class Dice : MonoBehaviour
 	  5
 	*/
 
-	void goLeft() {
+	public void goLeft() {
 		var d0 = diceValues[0];
 		var d1 = diceValues[1];
 		var d4 = diceValues[4];
@@ -76,10 +118,13 @@ public class Dice : MonoBehaviour
 		diceValues[4] = d5;
 		diceValues[5] = d1;
 
-		transform.Rotate(0f, 0f, 90f, Space.World);
+		StartCoroutine(animate(
+			new Vector3(0f, 0f, 90f),
+			Vector3.left
+		));
 	}
 
-	void goRight() {
+	public void goRight() {
 		var d0 = diceValues[0];
 		var d1 = diceValues[1];
 		var d4 = diceValues[4];
@@ -90,7 +135,10 @@ public class Dice : MonoBehaviour
 		diceValues[4] = d0;
 		diceValues[5] = d4;
 
-		transform.Rotate(0f, 0f, -90f, Space.World);
+		StartCoroutine(animate(
+			new Vector3(0f, 0f, -90f),
+			Vector3.right
+		));
 	}
 
     // Start is called before the first frame update
@@ -107,32 +155,7 @@ public class Dice : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-		// left
-		if(Input.GetKeyDown(KeyCode.A)) {
-			transform.position += Vector3.left * howMuchItMoves;
-			goLeft();
-		}
-
-		// right
-		if(Input.GetKeyDown(KeyCode.D)) {
-			transform.position += Vector3.right * howMuchItMoves;
-			goRight();
-		}
-
-		// up
-		if(Input.GetKeyDown(KeyCode.W)) {
-			transform.position += Vector3.forward * howMuchItMoves;
-			goUp();
-		}
-
-		// down
-		if(Input.GetKeyDown(KeyCode.S)) {
-			transform.position += Vector3.back * howMuchItMoves;
-			goDown();
-		}
-
 		updateTopAndBot();
-
 		//print("Top is now: " + currentTop);
 		//print("Bot is now: " + currentBot);
     }

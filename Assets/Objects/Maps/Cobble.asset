@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Cobble
   m_EditorClassIdentifier: 
   tiles:
-  - {fileID: 11400000, guid: 31b18a011e4250b4e93b6b23b710c624, type: 2}
+  - {fileID: 11400000, guid: 1dc7594ac52a41e42a5a376fcecee636, type: 2}
   walkable: 1
   rollable: 0
+  wall: 1
+  wallObject: {fileID: 1348264491116192919, guid: a6aa210bb2a18844daca7e0abedf51eb, type: 3}

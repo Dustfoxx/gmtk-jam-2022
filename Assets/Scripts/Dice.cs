@@ -8,7 +8,12 @@ public class Dice : MonoBehaviour
 
 	public float rotationTime = 1f;
 
+	public float slideTime = 1f;
+	
+	public int spacesToWall = 0;
+
 	bool isAnimating = false;
+	bool bottomIsFour = false;
 
 	int currentTop;
 	int currentBot;
@@ -39,6 +44,10 @@ public class Dice : MonoBehaviour
 		return isAnimating;
 	}
 
+	public bool sliding(){
+		return bottomIsFour && spacesToWall != 0;
+	}
+
 	IEnumerator animate(Vector3 desiredRotation, Vector3 desiredTranslation) {
 		var startRotation = transform.rotation;
 		transform.Rotate(desiredRotation, Space.World);
@@ -65,6 +74,23 @@ public class Dice : MonoBehaviour
 			transform.position += Vector3.up * yAxisOffset;
 			yield return null;
 		}
+		if(sliding()){
+			t = 0f;
+			startPosition = transform.position;
+			endPosition = transform.position + desiredTranslation*spacesToWall;
+			while(t < slideTime) {
+			var delta = Time.deltaTime;
+			t += delta;
+			var s = t / slideTime;
+			var positionThisFrame = Vector3.Lerp(startPosition, endPosition, s);
+
+			transform.position = positionThisFrame;
+			yield return null;
+		}
+		bottomIsFour = false;
+		}
+		Debug.Log("SpacesToWall: " + spacesToWall);
+		Debug.Log("Endposition: " + endPosition);
 		transform.position = endPosition;
 		isAnimating = false;
 	}
@@ -162,6 +188,12 @@ public class Dice : MonoBehaviour
 	void updateTopAndBot() {
         currentTop = diceValues[0];
         currentBot = diceValues[5];
+		if(currentBot == 4){
+			bottomIsFour = true;
+		}
+		else{
+			bottomIsFour = false;
+		}
 		//print("Top is now: " + currentTop);
 		//print("Bot is now: " + currentBot);
 	}

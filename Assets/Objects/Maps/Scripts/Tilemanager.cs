@@ -36,7 +36,7 @@ public class Tilemanager : MonoBehaviour
 	public string nextSceneIfCompleted = "Level1";
     public Vector3 playerPos = Vector3.zero;
     public Vector3 dicePos = Vector3.zero;
-	public Vector2Int exitPos = new Vector2Int(8, 6);
+	public Vector2Int exitPos;
 	public GameObject key2Switch;
 	public AudioSource keyUnlockSfx;
 	public AudioSource keyUnlockFailSfx;
@@ -45,6 +45,8 @@ public class Tilemanager : MonoBehaviour
 	public float switchFadeOutTime = 1f;
 	public GameObject exit;
 	public TileBase regularTile;
+    
+    private bool grab = false;
 
     Vector3 playerOffset = new Vector3(0.5f, 1f, 0.29f);
     Vector3 diceOffset = new Vector3(0.5f, 0.5f, 0.5f);
@@ -130,6 +132,13 @@ public class Tilemanager : MonoBehaviour
 			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 		}
 
+        if (Input.GetKeyDown(KeyCode.E)) {
+			grab = true;
+		} else if(Input.GetKeyUp(KeyCode.E)){
+            grab = false;
+        }
+
+
 		var gridWidth = width();
 		var gridHeight = height();
 		Vector3 proposedPos = player.transform.position + motion;
@@ -142,13 +151,37 @@ public class Tilemanager : MonoBehaviour
 		var rpp = proposedPos - playerOffset;
 		var rdp = dice.transform.position - diceOffset;
 
-		if(Mathf.Round(rpp.x) == Mathf.Round(rdp.x) && Mathf.Round(rpp.z) == Mathf.Round(rdp.z)) {
+        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A)) {
+            if(grab){
+                print(grab);
+                print(Mathf.Round(rpp.x - motion.x));
+                print(Mathf.Round(rdp.x));
+                print(Mathf.Round(rpp.z - motion.z));
+                print(Mathf.Round(rdp.z));
+            }
+		}
+
+        var playerWall = getIsWall((int)proposedPos.x, (int)proposedPos.z);
+
+        bool playerGrabResult = grab && Mathf.Round(rdp.x + motion.x) == Mathf.Round(rpp.x-motion.x) 
+        && Mathf.Round(rdp.z + motion.z)  == Mathf.Round(rpp.z - motion.z) && !playerWall;
+
+		if(Mathf.Round(rpp.x) == Mathf.Round(rdp.x) && Mathf.Round(rpp.z) == Mathf.Round(rdp.z) 
+        || playerGrabResult) {
 			var proposedDicePos = dice.transform.position + motion;
 			var proposedDiceCoords = new Vector2Int((int)(proposedDicePos.x), (int)proposedDicePos.z);
+            var spacesToWall = 0;
+            while (!playerGrabResult && !getIsWall(proposedDiceCoords.x + (int)motion.x*spacesToWall, proposedDiceCoords.y + (int)motion.z*spacesToWall)){
+                spacesToWall++;
+            }
+            if(spacesToWall != 0)
+                spacesToWall--;
+            dice.spacesToWall = spacesToWall;
+
 			if(getIsWall(proposedDiceCoords.x, proposedDiceCoords.y)) {
 				player.stop();
 				return;
-			} else {
+            } else {
 				switch(dir) {
 					case Direction.Up:
 						dice.goUp();
@@ -172,7 +205,7 @@ public class Tilemanager : MonoBehaviour
 
 		}
 
-		if (getIsWall((int)proposedPos.x, (int)proposedPos.z))
+        if (playerWall)
 		{
 			player.stop();
 		} else {
@@ -195,6 +228,7 @@ public class Tilemanager : MonoBehaviour
 					break;
 			}
 		}
+
     }
 
 
@@ -251,6 +285,15 @@ public class Tilemanager : MonoBehaviour
                     Vector3 tilePos = grid.GetCellCenterWorld(new Vector3Int(x, y, 0));
                     GameObject newWall = Instantiate(dataFromTiles[tile].wallObject);
                     newWall.transform.position = tilePos;
+                }
+                else if(tile.name == "Start"){
+                    playerPos = new Vector3(x, 0, y);
+                }
+                else if(tile.name == "End"){
+                    exitPos = new Vector2Int(x, y);
+                }
+                else if(tile.name == "diceStart"){
+                    dicePos = new Vector3(x, 0, y);
                 }
             }
         }

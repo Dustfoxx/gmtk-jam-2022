@@ -105,6 +105,8 @@ public class Tilemanager : MonoBehaviour
 				}
 			}
 		}
+
+		resetSpecialTiles();
     }
 
 
@@ -334,4 +336,16 @@ public class Tilemanager : MonoBehaviour
 	}
     
 
+	void resetSpecialTiles() {
+		for(int x = 0; x < width(); x++) {
+			for(int y = 0; y < height(); y++) {
+				var tile = get(x, y);
+				if(tile.name == "Start"
+					||tile.name == "End"
+					|| tile.name == "diceStart") {
+					set(x, y, regularTile);
+				}
+			}
+		}
+	}
 }

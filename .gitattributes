@@ -42,4 +42,4 @@
 *.png filter=lfs -crlf
 *.psd filter=lfs -crlf
 *.tga filter=lfs -crlf
-*.tif filter=lfs -crlf+
+*.tif filter=lfs -crlf

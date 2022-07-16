@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
+/*
+
 public enum Direction {
 	None,
 	Up,
@@ -11,6 +13,7 @@ public enum Direction {
 	Left,
 	Right,
 };
+*/
 
 public class Switch {
 	public Switch(Vector2Int p, int k) {

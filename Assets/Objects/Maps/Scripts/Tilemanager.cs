@@ -105,6 +105,7 @@ public class Tilemanager : MonoBehaviour
 		}
     }
 
+
     // Update is called once per frame
     void Update()
     {
@@ -132,9 +133,9 @@ public class Tilemanager : MonoBehaviour
 			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 		}
 
-        if (Input.GetKeyDown(KeyCode.E)) {
+        if (Input.GetKey(KeyCode.E)) {
 			grab = true;
-		} else if(Input.GetKeyUp(KeyCode.E)){
+		} else{
             grab = false;
         }
 

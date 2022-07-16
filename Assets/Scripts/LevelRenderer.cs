@@ -42,8 +42,10 @@ public class LevelRenderer : MonoBehaviour
 		new Switch(new Vector2Int(5, 2), 2),
 	};
 
+
     public Vector3 playerPos = Vector3.zero;
     public Vector3 dicePos = Vector3.zero;
+	public Vector2Int exitPos = new Vector2Int(8, 6);
 
 	public GameObject key2Switch;
 	public AudioSource keyUnlockSfx;
@@ -52,6 +54,7 @@ public class LevelRenderer : MonoBehaviour
     public Dice dice; 
     public Player player; 
 	public float switchFadeOutTime = 1f;
+	public GameObject exit;
     Vector3 playerOffset = new Vector3(0.5f, 1f, 0.29f);
     Vector3 diceOffset = new Vector3(0.5f, 0.5f, 0.5f);
     Texture2D tex;
@@ -88,21 +91,30 @@ public class LevelRenderer : MonoBehaviour
 	}
 
 	void tryTriggerSwitch(int index) {
+		if(switches[index].triggered) {
+			return;
+		}
+
 		if(switches[index].key != dice.bot()) {
 			keyUnlockFailSfx.Play();
 			//print("Unlock failed!");
 			return;
 		}
 
-		if(switches[index].triggered) {
-			return;
-		}
-
-		switches[index].triggered = false;
+		switches[index].triggered = true;
 		keyUnlockSfx.Play();
 		StartCoroutine(fadeOutSwitch(index));
-		//print("Unlocked! top was " + dice.top() + " bot was " + dice.bot());
 
+
+		//print("Unlocked! top was " + dice.top() + " bot was " + dice.bot());
+		
+		for(int i = 0; i < switches.Length; i++) {
+			if(!switches[i].triggered) {
+				return;
+			}
+		}
+
+		exit.SetActive(true);
 	}
 
 	IEnumerator fadeOutSwitch(int index) {
@@ -142,6 +154,9 @@ public class LevelRenderer : MonoBehaviour
         //Only needs to be called once in Start() or Awake(), if grid doesn't change.
         RenderGridToTexture(); 
 		initSwitches();
+		exit.transform.position = new Vector3((float)exitPos.x, 0f, (float)exitPos.y)
+			+ new Vector3(0.5f, 0.5f, 0.1f);
+		exit.SetActive(false);
     }
 
     void RenderGridToTexture()
@@ -218,6 +233,7 @@ public class LevelRenderer : MonoBehaviour
 				}
 
 				checkIfSwitchesWereTriggered(proposedDiceCoords);
+				checkIfExitIsReached(proposedDiceCoords);
 			}
 
 		}
@@ -248,4 +264,18 @@ public class LevelRenderer : MonoBehaviour
 			}
 		}
     }
+
+	void checkIfExitIsReached(Vector2Int coords) {
+		if(coords != exitPos) {
+			return;
+		}
+
+		for(int i = 0; i < switches.Length; i++) {
+			if(!switches[i].triggered) {
+				return;
+			}
+		}
+
+		print("You win!");
+	}
 }

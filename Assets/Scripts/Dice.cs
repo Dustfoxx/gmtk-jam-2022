@@ -12,6 +12,8 @@ public class Dice : MonoBehaviour
 	
 	public int spacesToWall = 0;
 
+	int moves = -1;
+
 	bool isAnimating = false;
 	bool bottomIsFour = false;
 
@@ -24,6 +26,10 @@ public class Dice : MonoBehaviour
 
 	public int bot() {
 		return currentBot;
+	}
+
+	public int getMoves() {
+		return moves;
 	}
 
 	/*
@@ -78,19 +84,20 @@ public class Dice : MonoBehaviour
 			t = 0f;
 			startPosition = transform.position;
 			endPosition = transform.position + desiredTranslation*spacesToWall;
-			while(t < slideTime) {
-			var delta = Time.deltaTime;
-			t += delta;
-			var s = t / slideTime;
-			var positionThisFrame = Vector3.Lerp(startPosition, endPosition, s);
+			var max = slideTime * spacesToWall * 0.2f;
+			while(t < max) {
+				var delta = Time.deltaTime;
+				t += delta;
+				var s = t / max;
+				var positionThisFrame = Vector3.Lerp(startPosition, endPosition, s);
 
-			transform.position = positionThisFrame;
-			yield return null;
+				transform.position = positionThisFrame;
+				yield return null;
+			}
+			bottomIsFour = false;
 		}
-		bottomIsFour = false;
-		}
-		Debug.Log("SpacesToWall: " + spacesToWall);
-		Debug.Log("Endposition: " + endPosition);
+		//Debug.Log("SpacesToWall: " + spacesToWall);
+		//Debug.Log("Endposition: " + endPosition);
 		transform.position = endPosition;
 		isAnimating = false;
 	}
@@ -194,6 +201,8 @@ public class Dice : MonoBehaviour
 		else{
 			bottomIsFour = false;
 		}
+		moves++;
+		print("Number of moves: " + moves);
 		//print("Top is now: " + currentTop);
 		//print("Bot is now: " + currentBot);
 	}

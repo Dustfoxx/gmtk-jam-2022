@@ -32,6 +32,24 @@ public class Player : MonoBehaviour
 
 		float t = 0f;
 
+		if(desiredTranslation.z > 0) {
+			animator.SetFloat("yDirection", 1f);
+			animator.SetFloat("xDirection", 0f);
+		} else if(desiredTranslation.z < 0) {
+			animator.SetFloat("yDirection", -1f);
+			animator.SetFloat("xDirection", 0f);
+		} else {
+			animator.SetFloat("yDirection", 0f);
+		}
+
+		if(desiredTranslation.x > 0) {
+			animator.SetFloat("xDirection", 1f);
+		} else if(desiredTranslation.x < 0) {
+			animator.SetFloat("xDirection", -1f);
+		} else {
+			animator.SetFloat("xDirection", 0f);
+		}
+
 		animator.SetBool("isWalking", true);
 		isAnimating = true;
 		while(t < walkingTime) {

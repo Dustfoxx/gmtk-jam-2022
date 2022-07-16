@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.SceneManagement;
 
 public enum Direction {
 	None,
@@ -43,6 +44,7 @@ public class LevelRenderer : MonoBehaviour
 	};
 
 
+	public string nextSceneIfCompleted = "Level1";
     public Vector3 playerPos = Vector3.zero;
     public Vector3 dicePos = Vector3.zero;
 	public Vector2Int exitPos = new Vector2Int(8, 6);
@@ -194,6 +196,8 @@ public class LevelRenderer : MonoBehaviour
 		} else if (Input.GetKey(KeyCode.D)) {
 			motion += Vector3.right;
 			dir = Direction.Right;
+		} else if (Input.GetKeyDown(KeyCode.R)) {
+			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 		}
 
 		var gridWidth = grid.GetLength(1);
@@ -241,8 +245,6 @@ public class LevelRenderer : MonoBehaviour
 		if (grid[(int)proposedPos.z, (int)proposedPos.x] == 1)
 		{
 			player.stop();
-			Debug.Log("Invalid attempted move from " + playerPos +
-											  " to " + proposedPos);
 		} else {
 			switch(dir)
 			{
@@ -276,6 +278,6 @@ public class LevelRenderer : MonoBehaviour
 			}
 		}
 
-		print("You win!");
+		SceneManager.LoadScene(nextSceneIfCompleted);
 	}
 }

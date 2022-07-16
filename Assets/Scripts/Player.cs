@@ -9,11 +9,13 @@ public class Player : MonoBehaviour
 
 	Animator animator;
 	bool isAnimating = false;
+	SpriteRenderer sprite;
 
     // Start is called before the first frame update
     void Start()
     {
         animator = GetComponent<Animator>();
+		sprite = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -32,22 +34,23 @@ public class Player : MonoBehaviour
 
 		float t = 0f;
 
-		if(desiredTranslation.z > 0) {
+		if(desiredTranslation.z > 0f) {
 			animator.SetFloat("yDirection", 1f);
-			animator.SetFloat("xDirection", 0f);
-		} else if(desiredTranslation.z < 0) {
+		} else if(desiredTranslation.z < 0f) {
 			animator.SetFloat("yDirection", -1f);
-			animator.SetFloat("xDirection", 0f);
 		} else {
 			animator.SetFloat("yDirection", 0f);
 		}
 
-		if(desiredTranslation.x > 0) {
+		if(desiredTranslation.x > 0f) {
 			animator.SetFloat("xDirection", 1f);
-		} else if(desiredTranslation.x < 0) {
-			animator.SetFloat("xDirection", -1f);
+			sprite.flipX = false;
+		} else if(desiredTranslation.x < 0f) {
+			animator.SetFloat("xDirection", 1f);
+			sprite.flipX = true;
 		} else {
 			animator.SetFloat("xDirection", 0f);
+			sprite.flipX = false;
 		}
 
 		animator.SetBool("isWalking", true);

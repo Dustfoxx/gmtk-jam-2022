@@ -12,6 +12,8 @@ public class Dice : MonoBehaviour
 	
 	public int spacesToWall = 0;
 
+	public bool canSlideAtAll = true;
+
 	int moves = -1;
 
 	bool isAnimating = false;
@@ -195,11 +197,13 @@ public class Dice : MonoBehaviour
 	void updateTopAndBot() {
         currentTop = diceValues[0];
         currentBot = diceValues[5];
-		if(currentBot == 4){
-			bottomIsFour = true;
-		}
-		else{
-			bottomIsFour = false;
+		if(canSlideAtAll) {
+			if(currentBot == 4){
+				bottomIsFour = true;
+			}
+			else{
+				bottomIsFour = false;
+			}
 		}
 		moves++;
 		print("Number of moves: " + moves);

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Grass Tile
   m_EditorClassIdentifier: 
   tiles:
-  - {fileID: 11400000, guid: 98285ba1cca6a6343aa9ad160ed234d9, type: 2}
+  - {fileID: 11400000, guid: 24479e997c0591e48accdedbe67217a1, type: 2}
   walkable: 1
   rollable: 1
   wall: 0

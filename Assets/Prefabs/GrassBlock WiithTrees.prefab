@@ -97,11 +97,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   environmentObjects:
-  - {fileID: 6912974790352450193, guid: c366db2d5b23c56408020f37867a973c, type: 3}
   - {fileID: 4704667154350396470, guid: 77847cc37195dea46abb8c6ee8b9b700, type: 3}
   - {fileID: 7719105022250067575, guid: 24e57d4f142fd8547b4e721c68a281d3, type: 3}
   - {fileID: 3499397183547544013, guid: 594caf1b0dd366b438062cb5002f7303, type: 3}
-  - {fileID: 8501511476985309454, guid: 83f9b5762137ff24190ea1176aef301b, type: 3}
   - {fileID: 6147599785756329760, guid: f02d287c7da988e458ffd6a0d6a26bf8, type: 3}
   - {fileID: 1148002359728229599, guid: 48ea9c8ee7425c14d9c451fb7f03ed8f, type: 3}
   - {fileID: 4372067048652771733, guid: bbfbede320b9ab741bb795e7d6efa69a, type: 3}
+  rareObjects:
+  - {fileID: 6912974790352450193, guid: c366db2d5b23c56408020f37867a973c, type: 3}
+  - {fileID: 8501511476985309454, guid: 83f9b5762137ff24190ea1176aef301b, type: 3}

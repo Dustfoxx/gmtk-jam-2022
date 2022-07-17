@@ -40,6 +40,16 @@ public class Tilemanager : MonoBehaviour
 	public Vector2Int exitPos;
 	public AudioSource keyUnlockSfx;
 	public AudioSource keyUnlockFailSfx;
+    public AudioSource[] flipSfx;
+    int lastflip = 0;
+	public AudioSource[] noiseSfx;
+    int lastNoise = 0;
+    public AudioSource[] barkSfx;
+    int lastBark = 0;
+	public AudioSource[] rollSfx;
+    int lastRoll = 0;
+	public AudioSource[] footstepSfx;
+    int lastFootstep = 0;
     public Dice dice; 
     public Player player; 
 	public float switchFadeOutTime = 1f;
@@ -50,6 +60,10 @@ public class Tilemanager : MonoBehaviour
 	public CameraFollowScript camera;
 	public GameObject unrollableBump;
     
+
+    private float t = 0f;
+    private float footstepTime = 0f;
+    private int noiseInterval = 5;
     private bool grab = false;
 
     Vector3 playerOffset = new Vector3(0.5f, 1f, 0.29f);
@@ -89,6 +103,15 @@ public class Tilemanager : MonoBehaviour
 	public int height() {
 		return bounds.size.y;
 	}
+
+    void playSoundFromArr(AudioSource[] noises, int lastPlayed){
+        int choice = 0;
+        do{
+            choice = (int)Random.Range(0, noises.Length - 1);
+        }while(choice == lastPlayed);
+
+        noises[choice].Play();
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -134,9 +157,25 @@ public class Tilemanager : MonoBehaviour
 			return;
 		}
 
+        if(player.isMoving()){
+            var footDelta = Time.deltaTime;
+            footstepTime += footDelta;
+            if(footstepTime > 1){
+                playSoundFromArr(footstepSfx, lastFootstep);
+                footstepTime = 0f;
+            }
+        }
 		if(player.isMoving() || dice.isMoving()) {
 			return;
 		}
+
+        var delta = Time.deltaTime;
+        t += delta;
+        var s = t / noiseInterval;
+        if(Random.Range(0, 500) < s*100){
+            playSoundFromArr(noiseSfx, lastNoise);
+            t = 0f;
+        } 
 
 		Vector3 motion = Vector3.zero;
 		Direction dir = Direction.None;
@@ -208,6 +247,7 @@ public class Tilemanager : MonoBehaviour
 				player.stop();
 				return;
             } else {
+                playSoundFromArr(rollSfx, lastRoll);
 				switch(dir) {
 					case Direction.Up:
 						dice.goUp();

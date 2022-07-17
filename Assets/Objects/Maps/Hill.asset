@@ -21,4 +21,4 @@ MonoBehaviour:
   interactable: 0
   functionNumber: 0
   id: 0
-  wallObject: {fileID: 3255784045182368263, guid: d5f3fdc07e36a1a4eb1b2b9c1b8a8a34, type: 3}
+  wallObject: {fileID: 8948579930681262364, guid: 1ec37104f46d16c40ace5b967f91be0d, type: 3}

@@ -33,7 +33,6 @@ public class Tilemanager : MonoBehaviour
         }
     }
 
-    public int[,] tileMatrix; 
     public Tilemap tileMap = null;
 	public string nextSceneIfCompleted = "Level1";
     public Vector3 playerPos = Vector3.zero;
@@ -49,6 +48,7 @@ public class Tilemanager : MonoBehaviour
     public TileBase wallTile;
 	public Flip flip;
 	public CameraFollowScript camera;
+	public GameObject unrollableBump;
     
     private bool grab = false;
 
@@ -71,6 +71,11 @@ public class Tilemanager : MonoBehaviour
 	public bool getIsWall(int x, int y) {
 		var tile = get(x, y);
         return dataFromTiles[tile].wall;
+	}
+
+	public bool getIsRollable(int x, int y) {
+		var tile = get(x, y);
+        return dataFromTiles[tile].rollable;
 	}
 
 	public void set(int x, int y, TileBase tile) {
@@ -198,7 +203,8 @@ public class Tilemanager : MonoBehaviour
                 spacesToWall--;
             dice.spacesToWall = spacesToWall;
 
-			if(getIsWall(proposedDiceCoords.x, proposedDiceCoords.y)) {
+			if(getIsWall(proposedDiceCoords.x, proposedDiceCoords.y)
+				|| !getIsRollable(proposedDiceCoords.x, proposedDiceCoords.y)) {
 				player.stop();
 				return;
             } else {
@@ -229,19 +235,20 @@ public class Tilemanager : MonoBehaviour
 		{
 			player.stop();
 		} else {
+			var playerHill = !getIsRollable((int)proposedPos.x, (int)proposedPos.z);
 			switch(dir)
 			{
 				case Direction.Up:
-					player.goUp();
+					player.goUp(playerHill);
 					break;
 				case Direction.Down:
-					player.goDown();
+					player.goDown(playerHill);
 					break;
 				case Direction.Left:
-					player.goLeft();
+					player.goLeft(playerHill);
 					break;
 				case Direction.Right:
-					player.goRight();
+					player.goRight(playerHill);
 					break;
 				case Direction.None:
 					player.stop();
@@ -335,13 +342,21 @@ public class Tilemanager : MonoBehaviour
         for (int x = bounds.size.x-1; x >= 0; x--) {
             for (int y = 0; y < bounds.size.y; y++) {
                 var tile = get(x, y);
-                if(dataFromTiles[tile].wall)
+				var data = dataFromTiles[tile];
+                if(data.wall)
                 {
                     Grid grid = tileMap.transform.parent.GetComponentInParent<Grid>();
                     Vector3 tilePos = grid.GetCellCenterWorld(new Vector3Int(x, y, 0));
                     GameObject newWall = Instantiate(dataFromTiles[tile].wallObject);
                     newWall.transform.position = tilePos;
                 }
+				else if(!data.rollable) {
+                    Grid grid = tileMap.transform.parent.GetComponentInParent<Grid>();
+                    Vector3 tilePos = grid.GetCellCenterWorld(new Vector3Int(x, y, 0));
+					tilePos.y = tilePos.y - 0.45f;
+					GameObject newBump = Instantiate(unrollableBump);
+					newBump.transform.position = tilePos;
+				}
                 else if(tile.name == "Start"){
                     playerPos = new Vector3(x, 0, y);
                 }

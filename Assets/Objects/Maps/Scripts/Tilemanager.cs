@@ -111,6 +111,9 @@ public class Tilemanager : MonoBehaviour
 
         foreach (var tileData in tileDatas){
             foreach(var tile in tileData.tiles){
+				if(tile == null) {
+					continue;
+				}
                 dataFromTiles.Add(tile, tileData);
             }
         }

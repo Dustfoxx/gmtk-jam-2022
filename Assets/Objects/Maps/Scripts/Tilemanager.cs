@@ -163,7 +163,6 @@ public class Tilemanager : MonoBehaviour
 			doFlipAnimation();
 			return;
 		}
-		print("After anim");
         if(player.isMoving()){
             var footDelta = Time.deltaTime;
             footstepTime += footDelta;
@@ -186,7 +185,6 @@ public class Tilemanager : MonoBehaviour
 
 		Vector3 motion = Vector3.zero;
 		Direction dir = Direction.None;
-		print("check movement");
 		if (Input.GetKey(KeyCode.W)) {
 			motion += Vector3.forward;
 			dir = Direction.Up;
@@ -242,7 +240,8 @@ public class Tilemanager : MonoBehaviour
 			var proposedDicePos = dice.transform.position + motion;
 			var proposedDiceCoords = new Vector2Int((int)(proposedDicePos.x), (int)proposedDicePos.z);
             var spacesToWall = 0;
-            while (!playerGrabResult && !getIsWall(proposedDiceCoords.x + (int)motion.x*spacesToWall, proposedDiceCoords.y + (int)motion.z*spacesToWall)){
+            while (!playerGrabResult && !getIsWall(proposedDiceCoords.x + (int)motion.x*spacesToWall, proposedDiceCoords.y + (int)motion.z*spacesToWall)
+			&& getIsRollable(proposedDiceCoords.x + (int)motion.x*spacesToWall, proposedDiceCoords.y + (int)motion.z*spacesToWall)){
                 spacesToWall++;
             }
             if(spacesToWall != 0)
@@ -323,7 +322,7 @@ public class Tilemanager : MonoBehaviour
 			case 4:
 			case 5:
 			case 6:
-				keyUnlock(here, key);
+				keyUnlock(here, key, tile);
 				break;
 			case 7:
 				revealHiddenWalls(here, tile);
@@ -333,7 +332,7 @@ public class Tilemanager : MonoBehaviour
 
 	HashSet<Vector2Int> unlockedKeys = new HashSet<Vector2Int>();
 
-    void keyUnlock(Vector2Int here, int key){
+    void keyUnlock(Vector2Int here, int key, TileBase tile){
 		if(unlockedKeys.Contains(here)) {
 			return;
 		}
@@ -350,7 +349,7 @@ public class Tilemanager : MonoBehaviour
 
 		unlockedKeys.Add(here);
 
-
+		revealHiddenWalls(here, tile);
 		//var tile = get(here);
 		//dataFromTiles[tile].stageSwitch = false;
 		set(here.x, here.y, regularTile);

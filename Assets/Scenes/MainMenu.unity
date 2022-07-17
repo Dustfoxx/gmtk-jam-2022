@@ -221,9 +221,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   origin: {x: 0, y: 0, z: 0}
-  orbitRadius: 1.5
+  orbitRadius: 1.8
   secondsPerFullCycle: 30
   percentOffset: 0.25
+  xModifier: 1.5
 --- !u!1 &726462937
 GameObject:
   m_ObjectHideFlags: 0
@@ -1145,3 +1146,4 @@ MonoBehaviour:
   orbitRadius: 1.8
   secondsPerFullCycle: 30
   percentOffset: 0.75
+  xModifier: 1.5

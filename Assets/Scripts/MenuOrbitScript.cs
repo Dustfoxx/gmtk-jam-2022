@@ -9,7 +9,7 @@ public class MenuOrbitScript : MonoBehaviour
 	public float secondsPerFullCycle;
 	public float percentOffset;
 
-	float xModifier = 2.0f;
+	public float xModifier = 1.2f;
 
 	float time = 0f;
 

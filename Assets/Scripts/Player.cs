@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
 
 	Animator animator;
 	bool isAnimating = false;
+	bool isOnHill = false;
 	SpriteRenderer sprite;
 
     // Start is called before the first frame update
@@ -68,20 +69,34 @@ public class Player : MonoBehaviour
 		animator.SetBool("isWalking", false);
 	}
 
-	public void goUp() {
-		StartCoroutine(animate(Vector3.forward));
+	Vector3 hillDiff(bool hill) {
+		const float d = 0.2f;
+		if(hill && isOnHill || !hill && !isOnHill) {
+			return Vector3.zero;
+		} else if(!hill && isOnHill) {
+			return Vector3.down * d;
+		}
+		return Vector3.up * d;
 	}
 
-	public void goDown() {
-		StartCoroutine(animate(Vector3.back));
+	public void goUp(bool hill) {
+		StartCoroutine(animate(Vector3.forward + hillDiff(hill)));
+		isOnHill = hill;
 	}
 
-	public void goLeft() {
-		StartCoroutine(animate(Vector3.left));
+	public void goDown(bool hill) {
+		StartCoroutine(animate(Vector3.back + hillDiff(hill)));
+		isOnHill = hill;
 	}
 
-	public void goRight() {
-		StartCoroutine(animate(Vector3.right));
+	public void goLeft(bool hill) {
+		StartCoroutine(animate(Vector3.left + hillDiff(hill)));
+		isOnHill = hill;
+	}
+
+	public void goRight(bool hill) {
+		StartCoroutine(animate(Vector3.right + hillDiff(hill)));
+		isOnHill = hill;
 	}
 
 	public void stop() {

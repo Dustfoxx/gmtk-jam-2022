@@ -35,13 +35,11 @@ public class Tilemanager : MonoBehaviour
         }
     }
 
-    public int[,] tileMatrix; 
     public Tilemap tileMap = null;
 	public string nextSceneIfCompleted = "Level1";
     public Vector3 playerPos = Vector3.zero;
     public Vector3 dicePos = Vector3.zero;
 	public Vector2Int exitPos;
-	public GameObject key2Switch;
 	public AudioSource keyUnlockSfx;
 	public AudioSource keyUnlockFailSfx;
     public AudioSource[] flipSfx;
@@ -60,6 +58,9 @@ public class Tilemanager : MonoBehaviour
 	public GameObject exit;
 	public TileBase regularTile;
     public TileBase wallTile;
+	public Flip flip;
+	public CameraFollowScript camera;
+	public GameObject unrollableBump;
     
 
     private float t = 0f;
@@ -88,6 +89,11 @@ public class Tilemanager : MonoBehaviour
         return dataFromTiles[tile].wall;
 	}
 
+	public bool getIsRollable(int x, int y) {
+		var tile = get(x, y);
+        return dataFromTiles[tile].rollable;
+	}
+
 	public void set(int x, int y, TileBase tile) {
 		tileMap.SetTile(new Vector3Int(x, y, 0), tile);
 	}
@@ -112,6 +118,7 @@ public class Tilemanager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+		flipSprite = flip.GetComponent<SpriteRenderer>();
         bounds = tileMap.cellBounds;
 		spawnedWalls = new GameObject[bounds.size.x][];
 		for(int i = 0; i < bounds.size.x; i++)
@@ -130,19 +137,32 @@ public class Tilemanager : MonoBehaviour
 		for(int x = 0; x < width(); x++) {
 			for(int y = 0; y < height(); y++) {
 				var tile = get(x, y);
-				if(tile.name == "switch-2") {
+				var isKey = false
+					||tile.name == "switch-1"
+					||tile.name == "switch-2"
+					||tile.name == "switch-3"
+					||tile.name == "switch-4"
+					||tile.name == "switch-5"
+					||tile.name == "switch-6";
+				if(isKey) {
 					nKeys++;
 				}
 			}
 		}
 
 		resetSpecialTiles();
+		camera.target = flip.gameObject;
+		flip.transform.position = exit.transform.position;
     }
 
 
     // Update is called once per frame
     void Update()
     {
+		if(doingFlipAnimation) {
+			doFlipAnimation();
+			return;
+		}
 
         if(player.isMoving()){
             var footDelta = Time.deltaTime;
@@ -229,7 +249,8 @@ public class Tilemanager : MonoBehaviour
                 spacesToWall--;
             dice.spacesToWall = spacesToWall;
 
-			if(getIsWall(proposedDiceCoords.x, proposedDiceCoords.y)) {
+			if(getIsWall(proposedDiceCoords.x, proposedDiceCoords.y)
+				|| !getIsRollable(proposedDiceCoords.x, proposedDiceCoords.y)) {
 				player.stop();
 				return;
             } else {
@@ -261,19 +282,20 @@ public class Tilemanager : MonoBehaviour
 		{
 			player.stop();
 		} else {
+			var playerHill = !getIsRollable((int)proposedPos.x, (int)proposedPos.z);
 			switch(dir)
 			{
 				case Direction.Up:
-					player.goUp();
+					player.goUp(playerHill);
 					break;
 				case Direction.Down:
-					player.goDown();
+					player.goDown(playerHill);
 					break;
 				case Direction.Left:
-					player.goLeft();
+					player.goLeft(playerHill);
 					break;
 				case Direction.Right:
-					player.goRight();
+					player.goRight(playerHill);
 					break;
 				case Direction.None:
 					player.stop();
@@ -294,16 +316,28 @@ public class Tilemanager : MonoBehaviour
 
 	
 	void tryTriggerSwitch(Vector2Int here, int key, TileBase tile) {
-		if(key == 2){
-            keyUnlock(here, key);
-        }
-        else if (key == 7){
-            revealHiddenWalls(here, tile);
-        }
+		switch(key) {
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+				keyUnlock(here, key);
+				break;
+			case 7:
+				revealHiddenWalls(here, tile);
+				break;
+		}
 	}
 
+	HashSet<Vector2Int> unlockedKeys = new HashSet<Vector2Int>();
 
     void keyUnlock(Vector2Int here, int key){
+		if(unlockedKeys.Contains(here)) {
+			return;
+		}
+
         if(key != dice.top()) {
 			keyUnlockFailSfx.Play();
 			return;
@@ -314,7 +348,11 @@ public class Tilemanager : MonoBehaviour
 		StartCoroutine(fadeOutSwitch(index));
 		*/
 
+		unlockedKeys.Add(here);
 
+
+		//var tile = get(here);
+		//dataFromTiles[tile].stageSwitch = false;
 		set(here.x, here.y, regularTile);
 		keyUnlockSfx.Play();
 		nKeys--;
@@ -351,7 +389,8 @@ public class Tilemanager : MonoBehaviour
         for (int x = bounds.size.x-1; x >= 0; x--) {
             for (int y = 0; y < bounds.size.y; y++) {
                 var tile = get(x, y);
-                if(dataFromTiles[tile].wall)
+				var data = dataFromTiles[tile];
+                if(data.wall)
                 {
 					if(!spawnedWalls[x][y])
 					{
@@ -362,7 +401,15 @@ public class Tilemanager : MonoBehaviour
 						spawnedWalls[x][y] = newWall;
 					}
                 }
-                if(tile.name == "Start"){
+				if(!data.rollable) {
+                    Grid grid = tileMap.transform.parent.GetComponentInParent<Grid>();
+                    Vector3 tilePos = grid.GetCellCenterWorld(new Vector3Int(x, y, 0));
+					tilePos.y = tilePos.y - 0.45f;
+					GameObject newBump = Instantiate(unrollableBump);
+					newBump.transform.position = tilePos;
+				}
+           if(tile.name == "Start"){
+
                     playerPos = new Vector3(x, 0, y);
                 }
                 if(tile.name == "End"){
@@ -400,5 +447,73 @@ public class Tilemanager : MonoBehaviour
 				}
 			}
 		}
+	}
+
+
+	bool doingFlipAnimation = true;
+	float flipTime = 0f;
+	SpriteRenderer flipSprite;
+	void doFlipAnimation() {
+		if(Input.GetKey(KeyCode.E)) {
+			endFlipAnimation();
+			return;
+		}
+
+		const float beginJumpKeyFrame = 1.0f;
+		const float endJumpKeyFrame = 2.0f;
+
+		const float turnLeftKeyFrame = 3.0f;
+		const float turnRightKeyFrame = 4.0f;
+		const float turnLeftAgainKeyFrame = 5.0f;
+
+		const float teleportKeyFrame = 6.0f;
+		const float raiseKeyFrame = 6.5f;
+		const float endKeyFrame = 7.0f;
+
+		flipTime += Time.deltaTime;
+		if(flipTime > beginJumpKeyFrame) {
+			const float flipJumpPeak = 0.2f;
+			const float cycle = Mathf.PI * 2f;
+			const float nJumps = 3f;
+			var position = flip.transform.position;
+			var step = (flipTime - beginJumpKeyFrame);
+			var scale = 1f + Mathf.Sin((Mathf.PI * -0.5f) + (cycle * (step * step)) * nJumps);
+			var y = flipJumpPeak * scale;
+			position.y = exit.transform.position.y + y;
+			flip.transform.position = position;
+		}
+		if(flipTime > endJumpKeyFrame) {
+			flip.transform.position = exit.transform.position;
+		}
+		if(flipTime > turnLeftKeyFrame) {
+			flipSprite.flipX = false;
+		}
+		if(flipTime > turnRightKeyFrame) {
+			flipSprite.flipX = true;
+		}
+		if(flipTime > turnLeftAgainKeyFrame) {
+			flipSprite.flipX = false;
+		}
+		if(flipTime > teleportKeyFrame) {
+			var s = 1f - (flipTime - teleportKeyFrame) / (endKeyFrame - teleportKeyFrame);
+			var scale = flip.transform.localScale;
+			scale.x = s;
+			flip.transform.localScale = scale;
+		}
+		if(flipTime > raiseKeyFrame) {
+			var s = (flipTime - raiseKeyFrame) / (endKeyFrame - raiseKeyFrame);
+			var position = flip.transform.position;
+			position.y = exit.transform.position.y + s;
+			flip.transform.position = position;
+		}
+		if(flipTime > endKeyFrame) {
+			endFlipAnimation();
+		}
+	}
+
+	void endFlipAnimation() {
+		doingFlipAnimation = false;
+		camera.target = player.gameObject;
+		flip.gameObject.SetActive(false);
 	}
 }

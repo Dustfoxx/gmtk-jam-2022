@@ -180,6 +180,7 @@ public class LevelRenderer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+		/*
 		if(player.isMoving() || dice.isMoving()) {
 			return;
 		}
@@ -268,6 +269,7 @@ public class LevelRenderer : MonoBehaviour
 					break;
 			}
 		}
+		*/
     }
 
 	void checkIfExitIsReached(Vector2Int coords) {

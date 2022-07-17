@@ -362,6 +362,12 @@ public class Tilemanager : MonoBehaviour
 	float flipTime = 0f;
 	SpriteRenderer flipSprite;
 	void doFlipAnimation() {
+		if(Input.GetKey(KeyCode.E)) {
+			doingFlipAnimation = false;
+			camera.target = player.gameObject;
+			flip.gameObject.SetActive(false);
+			return;
+		}
 
 		const float beginJumpKeyFrame = 1.0f;
 		const float endJumpKeyFrame = 2.0f;

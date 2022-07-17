@@ -257,7 +257,7 @@ public class Tilemanager : MonoBehaviour
 
 
     void keyUnlock(Vector2Int here, int key){
-        if(key != dice.bot()) {
+        if(key != dice.top()) {
 			keyUnlockFailSfx.Play();
 			return;
 		}

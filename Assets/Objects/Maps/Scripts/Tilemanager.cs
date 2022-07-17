@@ -541,8 +541,10 @@ public class Tilemanager : MonoBehaviour
 			endFlipAnimation();
 		}
 	}
-
+	
 	void endFlipAnimation() {
+		
+		playSoundFromArr(flipSfx, lastflip);
 		doingFlipAnimation = false;
 		camera.target = player.gameObject;
 		flip.gameObject.SetActive(false);

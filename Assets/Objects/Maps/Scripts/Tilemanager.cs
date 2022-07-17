@@ -163,7 +163,7 @@ public class Tilemanager : MonoBehaviour
 			doFlipAnimation();
 			return;
 		}
-
+		print("After anim");
         if(player.isMoving()){
             var footDelta = Time.deltaTime;
             footstepTime += footDelta;
@@ -186,7 +186,7 @@ public class Tilemanager : MonoBehaviour
 
 		Vector3 motion = Vector3.zero;
 		Direction dir = Direction.None;
-
+		print("check movement");
 		if (Input.GetKey(KeyCode.W)) {
 			motion += Vector3.forward;
 			dir = Direction.Up;
@@ -366,7 +366,7 @@ public class Tilemanager : MonoBehaviour
         set(here.x, here.y, regularTile);
         List<Vector2Int> tiles = affectedTiles[dataFromTiles[tile].id];
         for(int i = 0; i < tiles.Count; i++){
-            set(tiles[i].x, tiles[i].y, wallTile);
+            set(tiles[i].x, tiles[i].y, regularTile);
         }
         print("arrived");
         createMesh();

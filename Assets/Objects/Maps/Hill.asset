@@ -10,18 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d340c3bc64c48234f86f3a1be618ed0f, type: 3}
-  m_Name: Grass Tile
+  m_Name: Hill
   m_EditorClassIdentifier: 
   tiles:
-  - {fileID: 11400000, guid: b2df55db8870d7542957b3470f18648c, type: 2}
-  - {fileID: 11400000, guid: 1d69eb25d992e7540b0f3b4d7f6e23ee, type: 2}
-  - {fileID: 11400000, guid: 41c6728ecae7e294ea5a9af069482394, type: 2}
-  - {fileID: 11400000, guid: e70265add0c54334c8074fe76f7a67bf, type: 2}
-  walkable: 1
+  - {fileID: 11400000, guid: 1dc7594ac52a41e42a5a376fcecee636, type: 2}
+  walkable: 0
   rollable: 1
-  wall: 0
+  wall: 1
   stageSwitch: 0
   interactable: 0
   functionNumber: 0
   id: 0
-  wallObject: {fileID: 0}
+  wallObject: {fileID: 3255784045182368263, guid: d5f3fdc07e36a1a4eb1b2b9c1b8a8a34, type: 3}

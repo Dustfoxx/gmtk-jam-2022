@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Grass Bump Tile
   m_EditorClassIdentifier: 
   tiles:
-  - {fileID: 11400000, guid: 044fb62f98935ba45b200229a58d4164, type: 2}
+  - {fileID: 11400000, guid: a56d478a28a5369499e5d1f971fda76c, type: 2}
   walkable: 1
   rollable: 0
   wall: 0

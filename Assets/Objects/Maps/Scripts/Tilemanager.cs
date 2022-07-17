@@ -22,6 +22,8 @@ public class Tilemanager : MonoBehaviour
     private Dictionary<TileBase, Tiledata> dataFromTiles;
     private Dictionary<int, List<Vector2Int>> affectedTiles = new Dictionary<int, List<Vector2Int>>();
 
+	private GameObject[][] spawnedWalls;
+
 
     private void Awake(){
         dataFromTiles = new Dictionary<TileBase, Tiledata>();
@@ -118,6 +120,11 @@ public class Tilemanager : MonoBehaviour
     {
 		flipSprite = flip.GetComponent<SpriteRenderer>();
         bounds = tileMap.cellBounds;
+		spawnedWalls = new GameObject[bounds.size.x][];
+		for(int i = 0; i < bounds.size.x; i++)
+		{
+			spawnedWalls[i] = new GameObject[bounds.size.y];
+		}
 		createMesh();
 
         player.transform.position = playerPos + playerOffset;
@@ -385,28 +392,33 @@ public class Tilemanager : MonoBehaviour
 				var data = dataFromTiles[tile];
                 if(data.wall)
                 {
-                    Grid grid = tileMap.transform.parent.GetComponentInParent<Grid>();
-                    Vector3 tilePos = grid.GetCellCenterWorld(new Vector3Int(x, y, 0));
-                    GameObject newWall = Instantiate(dataFromTiles[tile].wallObject);
-                    newWall.transform.position = tilePos;
+					if(!spawnedWalls[x][y])
+					{
+                    	Grid grid = tileMap.transform.parent.GetComponentInParent<Grid>();
+                    	Vector3 tilePos = grid.GetCellCenterWorld(new Vector3Int(x, y, 0));
+                    	GameObject newWall = Instantiate(dataFromTiles[tile].wallObject);
+                    	newWall.transform.position = tilePos;
+						spawnedWalls[x][y] = newWall;
+					}
                 }
-				else if(!data.rollable) {
+				if(!data.rollable) {
                     Grid grid = tileMap.transform.parent.GetComponentInParent<Grid>();
                     Vector3 tilePos = grid.GetCellCenterWorld(new Vector3Int(x, y, 0));
 					tilePos.y = tilePos.y - 0.45f;
 					GameObject newBump = Instantiate(unrollableBump);
 					newBump.transform.position = tilePos;
 				}
-                else if(tile.name == "Start"){
+           if(tile.name == "Start"){
+
                     playerPos = new Vector3(x, 0, y);
                 }
-                else if(tile.name == "End"){
+                if(tile.name == "End"){
                     exitPos = new Vector2Int(x, y);
                 }
-                else if(tile.name == "diceStart"){
+                if(tile.name == "diceStart"){
                     dicePos = new Vector3(x, 0, y);
                 }
-                else if(dataFromTiles[tile].interactable){
+                if(dataFromTiles[tile].interactable){
                     if(affectedTiles.ContainsKey(dataFromTiles[tile].id)){
                         affectedTiles[dataFromTiles[tile].id].Add(new Vector2Int(x, y));
                     } else {
@@ -416,6 +428,9 @@ public class Tilemanager : MonoBehaviour
                         print(dataFromTiles[tile].id);
                     }
                 }
+				if (!dataFromTiles[tile].wall && spawnedWalls[x][y] != null){
+					Destroy(spawnedWalls[x][y]);
+				}
             }
         }
 	}

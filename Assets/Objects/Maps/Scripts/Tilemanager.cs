@@ -332,7 +332,6 @@ public class Tilemanager : MonoBehaviour
                 }
             }
         }
-        print(affectedTiles[34].ToString());
 	}
     
 

@@ -20,5 +20,5 @@ MonoBehaviour:
   stageSwitch: 1
   interactable: 0
   functionNumber: 3
-  id: 0
+  id: 13
   wallObject: {fileID: 0}

@@ -24,17 +24,6 @@ public class Tilemanager : MonoBehaviour
 
 	private GameObject[][] spawnedWalls;
 
-
-    private void Awake(){
-        dataFromTiles = new Dictionary<TileBase, Tiledata>();
-
-        foreach (var tileData in tileDatas){
-            foreach(var tile in tileData.tiles){
-                dataFromTiles.Add(tile, tileData);
-            }
-        }
-    }
-
     public Tilemap tileMap = null;
 	public string nextSceneIfCompleted = "Level1";
     public Vector3 playerPos = Vector3.zero;
@@ -118,6 +107,14 @@ public class Tilemanager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+		dataFromTiles = new Dictionary<TileBase, Tiledata>();
+
+        foreach (var tileData in tileDatas){
+            foreach(var tile in tileData.tiles){
+                dataFromTiles.Add(tile, tileData);
+            }
+        }
+
 		flipSprite = flip.GetComponent<SpriteRenderer>();
         bounds = tileMap.cellBounds;
 		spawnedWalls = new GameObject[bounds.size.x][];
@@ -219,16 +216,6 @@ public class Tilemanager : MonoBehaviour
 
 		var rpp = proposedPos - playerOffset;
 		var rdp = dice.transform.position - diceOffset;
-
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A)) {
-            if(grab){
-                print(grab);
-                print(Mathf.Round(rpp.x - motion.x));
-                print(Mathf.Round(rdp.x));
-                print(Mathf.Round(rpp.z - motion.z));
-                print(Mathf.Round(rdp.z));
-            }
-		}
 
         var playerWall = getIsWall((int)proposedPos.x, (int)proposedPos.z);
 
@@ -396,7 +383,6 @@ public class Tilemanager : MonoBehaviour
         for(int i = 0; i < tiles.Count; i++){
             set(tiles[i].x, tiles[i].y, regularTile);
         }
-        print("arrived");
         createMesh();
     }
 
@@ -408,7 +394,6 @@ public class Tilemanager : MonoBehaviour
 		if(nKeys > 0) {
 			return;
 		}
-
 		SceneManager.LoadScene(nextSceneIfCompleted);
 	}
 
@@ -453,7 +438,6 @@ public class Tilemanager : MonoBehaviour
                         List<Vector2Int> tempList = new List<Vector2Int>();
                         tempList.Add(new Vector2Int(x, y));
                         affectedTiles.Add(dataFromTiles[tile].id, tempList);
-                        print(dataFromTiles[tile].id);
                     }
                 }
 				if (!dataFromTiles[tile].wall && spawnedWalls[x][y] != null){
@@ -548,5 +532,15 @@ public class Tilemanager : MonoBehaviour
 		doingFlipAnimation = false;
 		camera.target = player.gameObject;
 		flip.gameObject.SetActive(false);
+	}
+
+	void OnDestroy(){
+		for(int i = 0; i < bounds.size.x; i++)
+		{
+			for(int p = 0; p < spawnedWalls[i].Length; p++)
+			{
+				Destroy(spawnedWalls[i][p]);
+			} 
+		}
 	}
 }

@@ -206,9 +206,6 @@ public class Dice : MonoBehaviour
 			}
 		}
 		moves++;
-		print("Number of moves: " + moves);
-		//print("Top is now: " + currentTop);
-		//print("Bot is now: " + currentBot);
 	}
 
     // Update is called once per frame

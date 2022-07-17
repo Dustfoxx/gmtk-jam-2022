@@ -45,12 +45,10 @@ public class Flip : MonoBehaviour
 		}
 
 		if(flipNoises.Length == 0){
-			print("BRUH FLIP");
 			return;
 		}
 
 		var i = Random.Range(0, flipNoises.Length);
-		print("Playing " + i);
 		flipNoises[i].Play();
 	}
 }

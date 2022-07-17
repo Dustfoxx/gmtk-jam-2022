@@ -44,7 +44,7 @@ public class MenuDialog : MonoBehaviour
 			gradientSprite.color = color;
 			return;
 		}
-
+		/*
 		var moving = Input.GetKeyDown(KeyCode.W) ||Input.GetKeyDown(KeyCode.S);
 		if(moving) {
 			if(selected == start) {
@@ -57,14 +57,13 @@ public class MenuDialog : MonoBehaviour
 
 			moveCursorSfx.Play();
 
-			/*
-			if(Input.GetKeyDown(KeyCode.W)) {
+			
+			// if(Input.GetKeyDown(KeyCode.W)) {
 
-			} else if(Input.GetKeyDown(KeyCode.S)) {
+			// } else if(Input.GetKeyDown(KeyCode.S)) {
 
-			}
-			*/
-		}
+			// }
+		}*/
 
 		var yes = Input.GetKeyDown(KeyCode.Space) ||Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.E);
 		if(yes) {

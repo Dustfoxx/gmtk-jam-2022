@@ -17,6 +17,18 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1d69eb25d992e7540b0f3b4d7f6e23ee, type: 2}
   - {fileID: 11400000, guid: 41c6728ecae7e294ea5a9af069482394, type: 2}
   - {fileID: 11400000, guid: e70265add0c54334c8074fe76f7a67bf, type: 2}
+  - {fileID: 11400000, guid: a5f37ba6df3263441b712d010ff8675a, type: 2}
+  - {fileID: 11400000, guid: 2f40a3df000f0ff43a2c96316adbeed2, type: 2}
+  - {fileID: 11400000, guid: b50245a38a148b24595628a50de386f0, type: 2}
+  - {fileID: 11400000, guid: 95ee12885c1146d42a65569b132fe8f4, type: 2}
+  - {fileID: 11400000, guid: dcf103a8731ade04bba81585841639b6, type: 2}
+  - {fileID: 11400000, guid: 5ac4762e5317e2448a73eb0ec5923657, type: 2}
+  - {fileID: 11400000, guid: 2357ddfef967640478c6dcff024f01ce, type: 2}
+  - {fileID: 11400000, guid: d1b0a9d185fe3544f8fce775f7ec52b4, type: 2}
+  - {fileID: 11400000, guid: e5a8ad715b5ce2e45aaea285cb885880, type: 2}
+  - {fileID: 11400000, guid: 1e7c6db58ce62904384fa4502d583007, type: 2}
+  - {fileID: 11400000, guid: 14d469b33b5b0404fb8364ced2182c22, type: 2}
+  - {fileID: 11400000, guid: 7c0b11e1b01f9c64794ebc8a7cb52070, type: 2}
   walkable: 1
   rollable: 1
   wall: 0

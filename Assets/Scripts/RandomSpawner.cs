@@ -8,10 +8,12 @@ public class RandomSpawner : MonoBehaviour
     public GameObject[] environmentObjects;
     public GameObject[] rareObjects;
 
+    private List<GameObject> objectList = new List<GameObject>();
+
     // Start is called before the first frame update
     void Start()
     {
-        var amount = Random.Range(2, 5);
+        var amount = Random.Range(1, 3);
         for(int i = 0; i < amount; i++){
             GameObject tempControl;
             if(Random.Range(1, 100) > 95){
@@ -21,7 +23,6 @@ public class RandomSpawner : MonoBehaviour
             {
                 tempControl = Instantiate(environmentObjects[Random.Range(0, environmentObjects.Length - 1)]);
             }
-             
             
 
             float xval = (float)Random.Range(0, 99)/100f - 0.5f;
@@ -29,15 +30,16 @@ public class RandomSpawner : MonoBehaviour
 
             float scale = (float)Random.Range(0, 40)/100f;
 
-            print(xval + " " + yval);
             tempControl.transform.localScale = tempControl.transform.localScale - Vector3.one/5 + new Vector3(scale, scale, scale);
             tempControl.transform.position = transform.position + Vector3.up/2 + new Vector3(xval, 0, yval);
+
+            objectList.Add(tempControl);
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    void OnDestroy(){
+        for(int i = 0; i < objectList.Count; i++){
+            Destroy(objectList[i]);
+        }
     }
 }

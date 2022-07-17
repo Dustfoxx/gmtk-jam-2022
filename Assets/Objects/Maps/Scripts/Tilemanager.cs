@@ -234,6 +234,7 @@ public class Tilemanager : MonoBehaviour
 
         bool playerGrabResult = grab && Mathf.Round(rdp.x + motion.x) == Mathf.Round(rpp.x-motion.x) 
         && Mathf.Round(rdp.z + motion.z)  == Mathf.Round(rpp.z - motion.z) && !playerWall;
+		bool didPush = false;
 
 		if(Mathf.Round(rpp.x) == Mathf.Round(rdp.x) && Mathf.Round(rpp.z) == Mathf.Round(rdp.z) 
         || playerGrabResult) {
@@ -253,6 +254,7 @@ public class Tilemanager : MonoBehaviour
 				player.stop();
 				return;
             } else {
+				didPush = true;
                 playSoundFromArr(rollSfx, lastRoll);
 				switch(dir) {
 					case Direction.Up:
@@ -281,25 +283,48 @@ public class Tilemanager : MonoBehaviour
 		{
 			player.stop();
 		} else {
-			var playerHill = !getIsRollable((int)proposedPos.x, (int)proposedPos.z);
-			switch(dir)
-			{
-				case Direction.Up:
-					player.goUp(playerHill);
-					break;
-				case Direction.Down:
-					player.goDown(playerHill);
-					break;
-				case Direction.Left:
-					player.goLeft(playerHill);
-					break;
-				case Direction.Right:
-					player.goRight(playerHill);
-					break;
-				case Direction.None:
-					player.stop();
-					break;
+			if(!didPush) {
+				var playerHill = !getIsRollable((int)proposedPos.x, (int)proposedPos.z);
+				switch(dir)
+				{
+					case Direction.Up:
+						player.goUp(playerHill);
+						break;
+					case Direction.Down:
+						player.goDown(playerHill);
+						break;
+					case Direction.Left:
+						player.goLeft(playerHill);
+						break;
+					case Direction.Right:
+						player.goRight(playerHill);
+						break;
+					case Direction.None:
+						player.stop();
+						break;
+				}
+			} else {
+				switch(dir) {
+					case Direction.Up:
+						player.goUp(false);
+						break;
+					case Direction.Down:
+						player.goDown(false);
+						break;
+					case Direction.Left:
+						player.goLeft(false);
+						//player.pushLeft();
+						break;
+					case Direction.Right:
+						player.goRight(false);
+						//player.pushRight();
+						break;
+					case Direction.None:
+						player.stop();
+						break;
+				}
 			}
+			
 		}
 
     }
@@ -475,6 +500,7 @@ public class Tilemanager : MonoBehaviour
 
 		flipTime += Time.deltaTime;
 		if(flipTime > beginJumpKeyFrame) {
+			flip.makeNoise(1);
 			const float flipJumpPeak = 0.2f;
 			const float cycle = Mathf.PI * 2f;
 			const float nJumps = 3f;
@@ -492,12 +518,14 @@ public class Tilemanager : MonoBehaviour
 			flipSprite.flipX = false;
 		}
 		if(flipTime > turnRightKeyFrame) {
+			flip.makeNoise(2);
 			flipSprite.flipX = true;
 		}
 		if(flipTime > turnLeftAgainKeyFrame) {
 			flipSprite.flipX = false;
 		}
 		if(flipTime > teleportKeyFrame) {
+			flip.makeNoise(3);
 			var s = 1f - (flipTime - teleportKeyFrame) / (endKeyFrame - teleportKeyFrame);
 			var scale = flip.transform.localScale;
 			scale.x = s;

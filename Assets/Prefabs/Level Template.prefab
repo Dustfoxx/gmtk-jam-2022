@@ -723,7 +723,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: fa7792b011fb46148971f7a24a104b02, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.355
+  m_Volume: 0.121
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -2185,7 +2185,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7380236441217751807, guid: 73ed28057cdb3684ca3cf5801013edf0, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 73ed28057cdb3684ca3cf5801013edf0, type: 3}
 --- !u!4 &2578949727955864584 stripped
 Transform:
@@ -3514,7 +3515,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 0a296908df01ac043b63ae13367e2a0f, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0

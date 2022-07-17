@@ -99,6 +99,47 @@ public class Player : MonoBehaviour
 		isOnHill = hill;
 	}
 
+	IEnumerator push(float x, float y) {
+		const float pushTime = 0.5f;
+		float t = 0f;
+		isAnimating = true;
+		animator.SetBool("isPushing", true);
+
+		if(y > 0f) {
+			animator.SetFloat("yDirection", 1f);
+		} else if(y < 0f) {
+			animator.SetFloat("yDirection", -1f);
+		} else {
+			animator.SetFloat("yDirection", 0f);
+		}
+
+		if(x > 0f) {
+			animator.SetFloat("xDirection", 1f);
+			sprite.flipX = false;
+		} else if(x < 0f) {
+			animator.SetFloat("xDirection", 1f);
+			sprite.flipX = true;
+		} else {
+			animator.SetFloat("xDirection", 0f);
+			sprite.flipX = false;
+		}
+		while(t < pushTime) {
+			t += Time.deltaTime;
+
+			yield return null;
+		}
+		isAnimating = false;
+		animator.SetBool("isPushing", false);
+	}
+
+	public void pushRight() {
+
+	}
+
+	public void pushLeft() {
+
+	}
+
 	public void stop() {
 		animator.gameObject.SetActive(false);
 		animator.gameObject.SetActive(true);

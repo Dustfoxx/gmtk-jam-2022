@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d340c3bc64c48234f86f3a1be618ed0f, type: 3}
+  m_Name: Hillwtrees
+  m_EditorClassIdentifier: 
+  tiles:
+  - {fileID: 11400000, guid: ef930a1c006fe824aa62f67b308cacf2, type: 2}
+  walkable: 0
+  rollable: 1
+  wall: 1
+  stageSwitch: 0
+  interactable: 0
+  functionNumber: 0
+  id: 0
+  wallObject: {fileID: 8948579930681262364, guid: 2b0567f1ebc28fe449ff68302458be74, type: 3}

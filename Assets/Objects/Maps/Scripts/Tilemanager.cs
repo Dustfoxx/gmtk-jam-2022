@@ -255,12 +255,19 @@ public class Tilemanager : MonoBehaviour
 
 	
 	void tryTriggerSwitch(Vector2Int here, int key, TileBase tile) {
-		if(key == 2){
-            keyUnlock(here, key);
-        }
-        else if (key == 7){
-            revealHiddenWalls(here, tile);
-        }
+		switch(key) {
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+				keyUnlock(here, key);
+				break;
+			case 7:
+				revealHiddenWalls(here, tile);
+				break;
+		}
 	}
 
 	HashSet<Vector2Int> unlockedKeys = new HashSet<Vector2Int>();
@@ -371,9 +378,7 @@ public class Tilemanager : MonoBehaviour
 	SpriteRenderer flipSprite;
 	void doFlipAnimation() {
 		if(Input.GetKey(KeyCode.E)) {
-			doingFlipAnimation = false;
-			camera.target = player.gameObject;
-			flip.gameObject.SetActive(false);
+			endFlipAnimation();
 			return;
 		}
 
@@ -425,9 +430,13 @@ public class Tilemanager : MonoBehaviour
 			flip.transform.position = position;
 		}
 		if(flipTime > endKeyFrame) {
-			doingFlipAnimation = false;
-			camera.target = player.gameObject;
-			flip.gameObject.SetActive(false);
+			endFlipAnimation();
 		}
+	}
+
+	void endFlipAnimation() {
+		doingFlipAnimation = false;
+		camera.target = player.gameObject;
+		flip.gameObject.SetActive(false);
 	}
 }

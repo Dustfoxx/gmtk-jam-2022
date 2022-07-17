@@ -39,7 +39,6 @@ public class Tilemanager : MonoBehaviour
     public Vector3 playerPos = Vector3.zero;
     public Vector3 dicePos = Vector3.zero;
 	public Vector2Int exitPos;
-	public GameObject key2Switch;
 	public AudioSource keyUnlockSfx;
 	public AudioSource keyUnlockFailSfx;
     public Dice dice; 
@@ -264,6 +263,7 @@ public class Tilemanager : MonoBehaviour
         }
 	}
 
+	HashSet<Vector2Int> unlockedKeys = new HashSet<Vector2Int>();
 
     void keyUnlock(Vector2Int here, int key){
         if(key != dice.top()) {
@@ -276,7 +276,15 @@ public class Tilemanager : MonoBehaviour
 		StartCoroutine(fadeOutSwitch(index));
 		*/
 
+		if(unlockedKeys.Contains(here)) {
+			return;
+		}
 
+		unlockedKeys.Add(here);
+
+
+		//var tile = get(here);
+		//dataFromTiles[tile].stageSwitch = false;
 		set(here.x, here.y, regularTile);
 		keyUnlockSfx.Play();
 		nKeys--;

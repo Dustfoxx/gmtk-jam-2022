@@ -102,7 +102,14 @@ public class Tilemanager : MonoBehaviour
 		for(int x = 0; x < width(); x++) {
 			for(int y = 0; y < height(); y++) {
 				var tile = get(x, y);
-				if(tile.name == "switch-2") {
+				var isKey = false
+					||tile.name == "switch-1"
+					||tile.name == "switch-2"
+					||tile.name == "switch-3"
+					||tile.name == "switch-4"
+					||tile.name == "switch-5"
+					||tile.name == "switch-6";
+				if(isKey) {
 					nKeys++;
 				}
 			}
@@ -273,6 +280,10 @@ public class Tilemanager : MonoBehaviour
 	HashSet<Vector2Int> unlockedKeys = new HashSet<Vector2Int>();
 
     void keyUnlock(Vector2Int here, int key){
+		if(unlockedKeys.Contains(here)) {
+			return;
+		}
+
         if(key != dice.top()) {
 			keyUnlockFailSfx.Play();
 			return;
@@ -282,10 +293,6 @@ public class Tilemanager : MonoBehaviour
 		/*
 		StartCoroutine(fadeOutSwitch(index));
 		*/
-
-		if(unlockedKeys.Contains(here)) {
-			return;
-		}
 
 		unlockedKeys.Add(here);
 

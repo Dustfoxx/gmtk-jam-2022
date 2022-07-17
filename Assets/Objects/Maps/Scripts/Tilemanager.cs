@@ -363,7 +363,11 @@ public class Tilemanager : MonoBehaviour
 
     void revealHiddenWalls(Vector2Int here, TileBase tile){
         set(here.x, here.y, regularTile);
-        List<Vector2Int> tiles = affectedTiles[dataFromTiles[tile].id];
+		var id = dataFromTiles[tile].id;
+		if(!affectedTiles.ContainsKey(id)) {
+			return;
+		}
+        List<Vector2Int> tiles = affectedTiles[id];
         for(int i = 0; i < tiles.Count; i++){
             set(tiles[i].x, tiles[i].y, regularTile);
         }

@@ -89,6 +89,7 @@ public class Tilemanager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+		flipSprite = flip.GetComponent<SpriteRenderer>();
         bounds = tileMap.cellBounds;
 		createMesh();
 
@@ -359,19 +360,43 @@ public class Tilemanager : MonoBehaviour
 
 	bool doingFlipAnimation = true;
 	float flipTime = 0f;
+	SpriteRenderer flipSprite;
 	void doFlipAnimation() {
-		const float turnLeftKeyFrame = 0f;
-		const float turnRightKeyFrame = 1.0f;
-		const float teleportKeyFrame = 2.0f;
-		const float raiseKeyFrame = 2.5f;
-		const float endKeyFrame = 3.0f;
+
+		const float beginJumpKeyFrame = 1.0f;
+		const float endJumpKeyFrame = 2.0f;
+
+		const float turnLeftKeyFrame = 3.0f;
+		const float turnRightKeyFrame = 4.0f;
+		const float turnLeftAgainKeyFrame = 5.0f;
+
+		const float teleportKeyFrame = 6.0f;
+		const float raiseKeyFrame = 6.5f;
+		const float endKeyFrame = 7.0f;
 
 		flipTime += Time.deltaTime;
+		if(flipTime > beginJumpKeyFrame) {
+			const float flipJumpPeak = 0.2f;
+			const float cycle = Mathf.PI * 2f;
+			const float nJumps = 3f;
+			var position = flip.transform.position;
+			var step = (flipTime - beginJumpKeyFrame);
+			var scale = 1f + Mathf.Sin((Mathf.PI * -0.5f) + (cycle * (step * step)) * nJumps);
+			var y = flipJumpPeak * scale;
+			position.y = exit.transform.position.y + y;
+			flip.transform.position = position;
+		}
+		if(flipTime > endJumpKeyFrame) {
+			flip.transform.position = exit.transform.position;
+		}
 		if(flipTime > turnLeftKeyFrame) {
-
+			flipSprite.flipX = false;
 		}
 		if(flipTime > turnRightKeyFrame) {
-
+			flipSprite.flipX = true;
+		}
+		if(flipTime > turnLeftAgainKeyFrame) {
+			flipSprite.flipX = false;
 		}
 		if(flipTime > teleportKeyFrame) {
 			var s = 1f - (flipTime - teleportKeyFrame) / (endKeyFrame - teleportKeyFrame);

@@ -48,6 +48,8 @@ public class Tilemanager : MonoBehaviour
 	public GameObject exit;
 	public TileBase regularTile;
     public TileBase wallTile;
+	public Flip flip;
+	public CameraFollowScript camera;
     
     private bool grab = false;
 
@@ -107,12 +109,18 @@ public class Tilemanager : MonoBehaviour
 		}
 
 		resetSpecialTiles();
+		camera.target = flip.gameObject;
+		flip.transform.position = exit.transform.position;
     }
 
 
     // Update is called once per frame
     void Update()
     {
+		if(doingFlipAnimation) {
+			doFlipAnimation();
+			return;
+		}
 
 		if(player.isMoving() || dice.isMoving()) {
 			return;
@@ -345,6 +353,42 @@ public class Tilemanager : MonoBehaviour
 					set(x, y, regularTile);
 				}
 			}
+		}
+	}
+
+
+	bool doingFlipAnimation = true;
+	float flipTime = 0f;
+	void doFlipAnimation() {
+		const float turnLeftKeyFrame = 0f;
+		const float turnRightKeyFrame = 1.0f;
+		const float teleportKeyFrame = 2.0f;
+		const float raiseKeyFrame = 2.5f;
+		const float endKeyFrame = 3.0f;
+
+		flipTime += Time.deltaTime;
+		if(flipTime > turnLeftKeyFrame) {
+
+		}
+		if(flipTime > turnRightKeyFrame) {
+
+		}
+		if(flipTime > teleportKeyFrame) {
+			var s = 1f - (flipTime - teleportKeyFrame) / (endKeyFrame - teleportKeyFrame);
+			var scale = flip.transform.localScale;
+			scale.x = s;
+			flip.transform.localScale = scale;
+		}
+		if(flipTime > raiseKeyFrame) {
+			var s = (flipTime - raiseKeyFrame) / (endKeyFrame - raiseKeyFrame);
+			var position = flip.transform.position;
+			position.y = exit.transform.position.y + s;
+			flip.transform.position = position;
+		}
+		if(flipTime > endKeyFrame) {
+			doingFlipAnimation = false;
+			camera.target = player.gameObject;
+			flip.gameObject.SetActive(false);
 		}
 	}
 }

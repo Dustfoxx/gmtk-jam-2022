@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d340c3bc64c48234f86f3a1be618ed0f, type: 3}
+  m_Name: Removable WallData
+  m_EditorClassIdentifier: 
+  tiles:
+  - {fileID: 11400000, guid: 48005ffa59c77314a851b50428ef8ace, type: 2}
+  walkable: 0
+  rollable: 0
+  wall: 1
+  stageSwitch: 0
+  interactable: 1
+  functionNumber: 0
+  id: 20
+  wallObject: {fileID: 1348264491116192919, guid: a6aa210bb2a18844daca7e0abedf51eb, type: 3}
